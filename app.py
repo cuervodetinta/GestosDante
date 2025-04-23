@@ -1,50 +1,78 @@
 import streamlit as st
 import cv2
 import numpy as np
-#from PIL import Image
 from PIL import Image as Image, ImageOps as ImagOps
 from keras.models import load_model
-
 import platform
 
-# Muestra la versión de Python junto con detalles adicionales
+# Configuración de página
+st.set_page_config(
+    page_title="Reconocimiento de Imágenes",
+    page_icon="📷",
+    layout="centered"
+)
+
+# CSS personalizado
+st.markdown(
+    """
+    <style>
+    html, body, .main, .stApp, [data-testid="stAppViewContainer"], [data-testid="stVerticalBlock"] {
+        background-color: #FFDBBB !important;
+    }
+    html, body, [class*="css"], h1, h2, h3, h4, h5, h6, p, div, span, label {
+        color: #301E08 !important;
+        text-align: center !important;
+    }
+    [data-testid="stSidebar"], [data-testid="stSidebarContent"] {
+        display: none !important;
+    }
+    .result-box {
+        background-color: white;
+        padding: 1.5rem;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        margin-top: 2rem;
+        text-align: center;
+        color: #301E08;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+# Mostrar versión de Python
 st.write("Versión de Python:", platform.python_version())
 
+# Cargar el modelo
 model = load_model('keras_model.h5')
 data = np.ndarray(shape=(1, 224, 224, 3), dtype=np.float32)
 
+# Título
 st.title("Reconocimiento de Imágenes")
-#st.write("Versión de Python:", platform.python_version())
+
+# Imagen de encabezado
 image = Image.open('wiwiwi.png')
 st.image(image, width=350)
-with st.sidebar:
-    st.subheader("Usando un modelo entrenado en teachable Machine puedes Usarlo en esta app para identificar")
+
+# Input desde cámara
 img_file_buffer = st.camera_input("Toma una Foto")
 
 if img_file_buffer is not None:
-    # To read image file buffer with OpenCV:
     data = np.ndarray(shape=(1, 224, 224, 3), dtype=np.float32)
-   #To read image file buffer as a PIL Image:
     img = Image.open(img_file_buffer)
-
     newsize = (224, 224)
     img = img.resize(newsize)
-    # To convert PIL Image to numpy array:
     img_array = np.array(img)
 
-    # Normalize the image
     normalized_image_array = (img_array.astype(np.float32) / 127.0) - 1
-    # Load the image into the array
     data[0] = normalized_image_array
 
-    # run the inference
     prediction = model.predict(data)
     print(prediction)
-    if prediction[0][0]>0.33:
-      st.header('Con Dante, con Probabilidad '+str( prediction[0][0]) )
-    if prediction[0][1]>0.33:
-      st.header('Sin gente, con Probabilidad: '+str( prediction[0][1]))
-    if prediction[0][2]>0.33:
-        st.header('Con Teo, con Probabilidad: '+str( prediction[0][2]))
 
-
+    if prediction[0][0] > 0.33:
+        st.markdown(f'<div class="result-box">Con Dante, con Probabilidad: {prediction[0][0]:.2f}</div>', unsafe_allow_html=True)
+    if prediction[0][1] > 0.33:
+        st.markdown(f'<div class="result-box">Sin gente, con Probabilidad: {prediction[0][1]:.2f}</div>', unsafe_allow_html=True)
+    if prediction[0][2] > 0.33:
+        st.markdown(f'<div class="result-box">Con Teo, con Probabilidad: {prediction[0][2]:.2f}</div>', unsafe_allow_html=True)

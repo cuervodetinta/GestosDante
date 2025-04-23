@@ -35,6 +35,11 @@ st.markdown(
         text-align: center;
         color: #301E08;
     }
+    .centered-img img {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+    }
     </style>
     """,
     unsafe_allow_html=True
@@ -50,9 +55,11 @@ data = np.ndarray(shape=(1, 224, 224, 3), dtype=np.float32)
 # Título
 st.title("Reconocimiento de Imágenes")
 
-# Imagen de encabezado
+# Imagen de encabezado centrada
 image = Image.open('wiwiwi.png')
-st.image(image, width=350)
+st.markdown('<div class="centered-img">', unsafe_allow_html=True)
+st.image(image, width=350, use_container_width=False)
+st.markdown('</div>', unsafe_allow_html=True)
 
 # Input desde cámara
 img_file_buffer = st.camera_input("Toma una Foto")

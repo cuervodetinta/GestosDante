@@ -10,12 +10,6 @@ import platform
 # Muestra la versión de Python junto con detalles adicionales
 st.write("Versión de Python:", platform.python_version())
 
-st.set_page_config(
-    page_title="Detección de Gestos en Tiempo Real",
-    page_icon="🔍",
-    layout="wide"
-)
-
 model = load_model('keras_model.h5')
 data = np.ndarray(shape=(1, 224, 224, 3), dtype=np.float32)
 
